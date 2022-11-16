@@ -20,7 +20,72 @@ url = 'https://www.worldometers.info/coronavirus/country/us'
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.3'}
 
 
+req = Request(url, headers=headers)
 
+webpage = urlopen(req).read()
+
+soup = BeautifulSoup(webpage, 'html.parser')
+
+table_rows = soup.findAll("tr")
+
+'''for row in table_rows[2:51]:
+    td = row.findAll("td")
+    print(td[0].text)
+    input()
+'''
+
+state_worst_death = ''
+state_best_death = ''
+high_death_ratio = 0.0
+low_death_ratio = 100.0
+
+state_best_test = ''
+state_worst_test = ''
+high_test_ratio = 0.0
+low_test_ratio = 100.0
+
+
+
+for row in table_rows[2:51]:
+    td = row.findAll("td")
+    state = td[1].text
+    t_deaths = int(td[4].text.replace(",",""))
+    t_cases = int(td[2].text.replace(",",""))
+    t_tests = int(td[10].text.replace(",",""))
+    population = int(td[12].text.replace(",",""))
+    death_rate = round((t_deaths/t_cases) * 100)
+    test_rate = round((t_tests/population) * 100)
+    
+    if death_rate > high_death_ratio:
+        state_worst_death = state
+        high_death_ratio =death_rate
+
+    if death_rate < low_death_ratio:
+        state_best_death = state
+        low_death_ratio = death_rate
+
+
+    if test_rate > high_test_ratio:
+        state_best_test = state
+        high_test_ratio = test_rate
+
+    if test_rate < low_test_ratio:
+        state_worst_test = state
+        low_test_ratio = test_rate
+
+        
+           
+    
+    
+    print(f"State: {state}")
+    print(f"Total Deaths: {t_deaths}")
+    print(f"Total Cases: {t_cases}")
+    print(f"Total Tests: {t_tests}")
+    print(f"Population: {population}")
+    print(f"Death Rate: {death_rate}%")
+    print()
+    print()
+    input()
 
 
 
